@@ -1,0 +1,296 @@
+<% include navbar.ejs %>
+
+<head>
+    
+    <script
+    src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+    <script src="httpS://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script>
+// Create the chart
+    $(function () {  
+    $('#forecast').highcharts({
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: '7 Day Snow Forecast'
+    },
+    subtitle: {
+        text: 'Click the columns to view 24 hour data. Source: <a href="https://darksky.net/poweredby/">Powered by Dark Sky</a>.'
+    },
+    xAxis: {
+        type: 'category',
+        tickInterval: 1
+    },
+    yAxis: {
+        title: {
+            text: 'Forecasted Snow Accumulation (in)'
+        }
+
+    },
+    legend: {
+        enabled: false
+    },
+    plotOptions: {
+        series: {
+            borderWidth: 0,
+            dataLabels: {
+                enabled: true,
+                format: '{point.y:.2f} in'
+            }
+        }
+    },
+
+    tooltip: {
+        headerFormat: '<span style="font-size:11px">Forecast</span><br>',
+        pointFormat: '{point.name}<br>{point.y:.2f} in<br/>'
+    },
+
+    series: [{
+        name: 'Days',
+        colorByPoint: false,
+        data: [
+          <% for (let i=0; i<forecastData.daily.length; i++) {%>
+            {
+              y: <%= forecastData.daily[i].precipAccumulation %>,
+              drilldown: '<%= forecastData.daily[i].time.format("MMM Do") %>',
+              name: '<%= forecastData.daily[i].time.format("MMM Do") %>'
+            }, 
+          <% } %>
+        ]
+    }],
+    drilldown: {
+        series: [
+            <% for (let i=0; i<forecastData.daily.length; i++) {%>
+              {
+              name: '<%= forecastData.daily[i].time.format("MMM Do") %>',
+              id: '<%= forecastData.daily[i].time.format("MMM Do") %>',
+              data: [
+                <% for (let j=0; j<forecastData.daily[i].hourly.length; j++) {%>  
+                  ['<%= forecastData.daily[i].hourly[j].time.format("h A") %>', <%= forecastData.daily[i].hourly[j].precipAccumulation %> ],
+                <% } %>
+              ]
+            }, 
+          <% } %>
+          ]
+        }
+    })
+});
+    
+  </script>
+    <script>
+    $(function () {  
+    $('#snwdGranular').highcharts({
+    chart: {
+        type: 'line'
+    },
+    title: {
+        text: '7 Day Historical "Hourly" Snow Data'
+    },
+    subtitle: {
+        text: 'Most granular data available from Snotel'
+    },
+    xAxis: {
+        type: 'datetime',
+        dateTimeLabelFormats: { // don't display the dummy year
+            month: '%e. %b',
+            year: '%b'
+        },
+        title: {
+            text: 'Date'
+        }
+    },
+    yAxis: {
+        title: {
+            text: 'Snow Depth'
+        },
+        min: 0
+    },
+    tooltip: {
+        headerFormat: '<b>{series.name}</b><br>',
+        pointFormat: '{point.x:%b %e. %H:%M}<br> <b>{point.y:.2f} in</b> '
+    },
+
+    plotOptions: {
+        spline: {
+            marker: {
+                enabled: true
+            }
+        }
+    },
+
+    series: [
+      <% if (snwdGranular) { %>
+        {
+          name: 'Snow Depth',
+          data: [
+            <% for (let i = 0; i < snwdGranular.length; i++){ %>
+              <% if ( snwdGranular[i].flag == 'V' || snwdGranular[i].flag == 'E' ) { %>
+                [Date.parse('<%= snwdGranular[i].dateTime %>'), <%= snwdGranular[i].value %> ],
+              <% } %>
+            <% } %>
+          ]
+        }, 
+      <% } %>
+      <% if (wteqGranular) { %>                      
+        {
+          name: 'Snow Water Equivalent',
+          data: [
+            <% for (let i = 0; i < wteqGranular.length; i++){ %>
+              <% if ( wteqGranular[i].flag == 'V' || wteqGranular[i].flag == 'E' ) { %>
+                [Date.parse('<%= wteqGranular[i].dateTime %>'), <%= wteqGranular[i].value %> ],
+              <% } %>
+            <% } %>
+          ]
+        },
+     <% } %>                       
+                          
+                      
+    ]
+})
+    })
+    </script>
+  
+   <script>
+    $(function () {  
+    $('#tavgGranular').highcharts({
+    chart: {
+        type: 'line'
+    },
+    title: {
+        text: '7 Day Historical "Hourly" Observed Temperature'
+    },
+    subtitle: {
+        text: 'Most granular data available from Snotel'
+    },
+    xAxis: {
+        type: 'datetime',
+        dateTimeLabelFormats: { // don't display the dummy year
+            month: '%e. %b',
+            year: '%b'
+        },
+        title: {
+            text: 'Date'
+        }
+    },
+    yAxis: {
+        title: {
+            text: 'Observed Temp'
+        },
+    },
+    tooltip: {
+        headerFormat: '<b>{series.name}</b><br>',
+        pointFormat: '{point.x:%b %e. %H:%M}<br> <b>{point.y:.2f} deg</b> '
+    },
+
+    plotOptions: {
+        spline: {
+            marker: {
+                enabled: true
+            }
+        }
+    },
+
+    series: [
+     <% if (tavgGranular) { %> 
+      {
+        name: 'Observed Temperature',
+        // Define the data points. All series have a dummy year
+        // of 1970/71 in order to be compared on the same x axis. Note
+        // that in JavaScript, months start at 0 for January, 1 for February etc.
+        data: [
+      <% for (let i = 0; i < tavgGranular.length; i++){ %>
+        <% if ( tavgGranular[i].flag == 'V' || tavgGranular[i].flag == 'E' ) { %>
+          [Date.parse('<%= tavgGranular[i].dateTime %>'), <%= tavgGranular[i].value %> ],
+        <% } %>
+      <% } %>
+        ]
+    }
+     <% } %>                 
+    ]
+})
+    })
+    </script>
+  
+    <script>
+    $(function () {  
+    $('#seasonData').highcharts({
+    chart: {
+        type: 'line',
+        zoomType: 'x' 
+    },
+    title: {
+        text: 'Historical Season Comparison'
+    },
+    subtitle: {
+        text: 'Multiple years for comparison'
+    },
+    xAxis: {
+        type: 'datetime',
+        dateTimeLabelFormats: { // don't display the dummy year
+            month: '%e. %b',
+            year: '%b'
+        },
+        title: {
+            text: 'Date'
+        }
+    },
+    yAxis: {
+        title: {
+            text: 'Snow Depth'
+        },
+        min: 0
+    },
+    tooltip: {
+        headerFormat: '<b>{series.name}</b><br>',
+        pointFormat: '{point.x:%b %e. %H:%M}<br> <b>{point.y:.2f} in</b> '
+    },
+
+    plotOptions: {
+        spline: {
+            marker: {
+                enabled: true
+            }
+        }
+    },
+
+    series: 
+      [
+        <% if (season) { %>
+          <% for (let i = 0; i < season.seasonData.length; i++){ %>
+            {
+              name: '<%= season.seasonTitles[i] %>',
+              data: [
+                <% for (let j = 0; j < season.seasonData[i].length; j++){ %>          
+                    [Date.parse('<%= season.seasonData[i][j].dateTime %>'), <%= season.seasonData[i][j].value %> ],
+                <% } %>
+              ] 
+            }, 
+          <% } %>
+        <% } %>
+      ]
+})
+    })
+    </script>
+  </head>
+  <body>
+    
+    <% for(let i = 0; i < errors.length; i++) {%>
+        <%= errors[i]%> <br>
+    <% } %>
+    <% if (stationData) { %>
+      <H1>
+        <%= stationData.name %>
+      </H1>
+    
+    <% } %>
+    
+    <div id="forecast" ></div>
+    <div id="snwdGranular" ></div>
+    <div id="tavgGranular" ></div>
+    <div id="seasonData" ></div>
+  </body>

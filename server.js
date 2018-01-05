@@ -32,12 +32,14 @@ var listener = app.listen(process.env.PORT, function () {
 
 app.get('/station/:triplet', async function (request, response) {
   var errors = []
+  try{
   const stationData = await getStationData(request.params.triplet)
   const season = await getSeasonalData(request.params.triplet, 'SNWD')
   const snwdGranular = await getGranularData(request.params.triplet, 'SNWD')
   const tavgGranular = await getGranularData(request.params.triplet, 'TOBS')
   const wteqGranular = await getGranularData(request.params.triplet, 'WTEQ')
   const forecastData = await getForecastData(stationData.lat, stationData.long)
+
   response.render('station', {
     stationData: stationData,
     season: season,
@@ -47,6 +49,11 @@ app.get('/station/:triplet', async function (request, response) {
     forecastData: forecastData,
     errors: errors
   })
+  } catch (err) {
+    console.log(err)
+    response.send(err)
+  }
+                    
 })
 
 function inSeason (d) {
@@ -83,6 +90,7 @@ async function getSeasonalData (triplet, elementCd) {
 
   const client = await soap.createClient(url)
   const result = await client.getData(args)
+  if (!result.return[0]) {return Promise.reject('Failed to get useable seasonal data from snotel for ' + triplet + ' ' + elementCd)}
   var snotelData = result.return[0]
   var soapBeginDate = result.return[0].beginDate
   var soapEndDate = result.return[0].endDate
@@ -137,6 +145,7 @@ async function getGranularData (triplet, elementCd) {
 
   const client = await soap.createClient(url)
   const result = await client.getHourlyData(args)
+  if (!result.return[0]) {return Promise.reject('Failed to get useable granular data from snotel for ' + triplet + ' ' + elementCd)}
   return result.return[0].values
 }
 
@@ -148,6 +157,7 @@ async function getStationData (triplet) {
 
   const client = await soap.createClient(url)
   const result = await client.getStationMetadata(args)
+  if (!result.return.name) {return Promise.reject('Failed to get useable station data from snotel for ' + triplet)}
   var stationData = {
     name: result.return.name,
     lat: result.return.latitude,
@@ -160,6 +170,7 @@ async function getStationData (triplet) {
 
 async function getForecastData (lat, long, callback) {
   const body = await requestPromise('https://api.darksky.net/forecast/' + process.env.DARK_SKY + '/' + lat + ',' + long + '?extend=hourly', { json: true })
+  if (!body.daily.data[0]) {return Promise.reject('Failed to get useable forcast data from snotel for ' + lat + ',' + long)}
   var rawForecastData = body
   var forecastData = {daily: []}
     // process daily

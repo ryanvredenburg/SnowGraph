@@ -76,20 +76,10 @@ app.get("/station/:triplet", function (request, response) {
         })
       })
     })
-    })
+  })
 })
   
  });
-
-app.get("/dummy", function (request, response) {
- var errors = new Array()
-   getForecastData(44.94, -109.57, function (err, forecastData){
-     response.render('dummy', {forecastData: forecastData})
-   })
-    
-  
- });
-
 
 function inSeason(d) {
   //remember that months are zero indexed
@@ -113,8 +103,6 @@ function getSeasonalData(triplet, elementCd, callback) {
   //if today is out of season set the end date to the last day in may of this year
   if (!inSeason(endDate)) { endDate = lastSeasonYear(endDate).toString() + '-05-31'  }
   var beginDate = moment((lastSeasonYear(endDate)-4).toString() + '-11-01')
-  console.log("BEGIN:  ", beginDate.format('YYYY-MM-DD'))
-  console.log("END:  ", endDate.format('YYYY-MM-DD'))
   var args = {
         stationTriplets: triplet,
         elementCd: elementCd,

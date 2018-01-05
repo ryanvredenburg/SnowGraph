@@ -111,6 +111,10 @@ function getSeasonalData (triplet, elementCd, callback) {
   }
 
   soap.createClient(url, function (err, client) {
+    if (err) {
+      callback('Error creating SOAP client for ' + triplet + ' on ' + elementCd)
+      return
+    }
     client.getData(args, function (err, result) {
       if (err || !result.return[0].values) {
         callback('Error getting snotel data from ' + triplet + ' on ' + elementCd)
@@ -171,6 +175,10 @@ function getGranularData (triplet, elementCd, callback) {
   }
 
   soap.createClient(url, function (err, client) {
+    if (err) {
+      callback('Error creating SOAP client for ' + triplet + ' on ' + elementCd)
+      return
+    }
     client.getHourlyData(args, function (err, result) {
       if (err || !result.return[0].values) {
         callback('Error getting snotel data from ' + triplet + ' on ' + elementCd)
@@ -189,6 +197,10 @@ function getStationData (triplet, callback) {
   }
 
   soap.createClient(url, function (err, client) {
+    if (err) {
+      callback('Error creating SOAP client for ' + triplet)
+      return
+    }
     client.getStationMetadata(args, function (err, result) {
       if (err || !result.return.name) {
         callback('Error getting snotel station data from ' + triplet)

@@ -130,7 +130,9 @@
           data: [
             <% for (let i = 0; i < snwdGranular.length; i++){ %>
               <% if ( snwdGranular[i].flag == 'V' || snwdGranular[i].flag == 'E' ) { %>
-                [Date.parse('<%= snwdGranular[i].dateTime %>'), <%= snwdGranular[i].value %> ],
+                <% const d = snwdGranular[i].dateTime.match(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/) %>
+                <% const parsed = new Date(d[1], d[2]-1, d[3], d[4], d[5], 0).getTime() %>
+                [<%= parsed %>, <%= snwdGranular[i].value %> ],
               <% } %>
             <% } %>
           ]
@@ -142,7 +144,9 @@
           data: [
             <% for (let i = 0; i < wteqGranular.length; i++){ %>
               <% if ( wteqGranular[i].flag == 'V' || wteqGranular[i].flag == 'E' ) { %>
-                [Date.parse('<%= wteqGranular[i].dateTime %>'), <%= wteqGranular[i].value %> ],
+                <% const d = snwdGranular[i].dateTime.match(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/) %>
+                <% const parsed = new Date(d[1], d[2]-1, d[3], d[4], d[5], 0).getTime() %>
+                [<%= parsed %>, <%= wteqGranular[i].value %> ],
               <% } %>
             <% } %>
           ]

@@ -124,7 +124,7 @@
     },
 
     series: [
-      <% if (snwdGranular !== undefined) { %>
+      <% if (snwdGranular) { %>
         {
           name: 'Snow Depth',
           data: [
@@ -136,7 +136,7 @@
           ]
         }, 
       <% } %>
-      <% if (wteqGranular !== undefined) { %>                      
+      <% if (wteqGranular) { %>                      
         {
           name: 'Snow Water Equivalent',
           data: [
@@ -196,7 +196,7 @@
     },
 
     series: [
-     <% if (tavgGranular !== undefined) { %> 
+     <% if (tavgGranular) { %> 
       {
         name: 'Observed Temperature',
         // Define the data points. All series have a dummy year
@@ -260,7 +260,7 @@
 
     series: 
       [
-        <% if (season !== undefined) { %>
+        <% if (season) { %>
           <% for (let i = 0; i < season.seasonData.length; i++){ %>
             {
               name: '<%= season.seasonTitles[i] %>',
@@ -282,7 +282,7 @@
     <% for(let i = 0; i < errors.length; i++) {%>
         <%= errors[i]%> <br>
     <% } %>
-    <% if (stationData !== undefined) { %>
+    <% if (stationData) { %>
       <H1>
         <%= stationData.name %>
       </H1>

@@ -16,10 +16,7 @@
     "moment-timezone": "^0.5.14",
     "compression": "^1.7.1",
     "request": "^2.83.0",
-    "dotenv": "^4.0.0",
-    "standard": "^10.0.3",
-    "soap-as-promised": "^1.23.0",
-    "request-promise-native": "^1.0.5"
+    "dotenv": "^4.0.0"
   },
   "engines": {
     "node": "8.x"

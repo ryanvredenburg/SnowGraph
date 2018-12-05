@@ -57,8 +57,8 @@
           <% for (let i=0; i<forecastData.daily.length; i++) {%>
             {
               y: <%= forecastData.daily[i].precipAccumulation %>,
-              drilldown: '<%= forecastData.daily[i].time.format("MMM Do") %>',
-              name: '<%= forecastData.daily[i].time.format("MMM Do") %>'
+              drilldown: '<%= forecastData.daily[i].time.format("ddd MMM Do") %>',
+              name: '<%= forecastData.daily[i].time.format("ddd MMM Do") %>'
             }, 
           <% } %>
         ]
@@ -67,8 +67,8 @@
         series: [
             <% for (let i=0; i<forecastData.daily.length; i++) {%>
               {
-              name: '<%= forecastData.daily[i].time.format("MMM Do") %>',
-              id: '<%= forecastData.daily[i].time.format("MMM Do") %>',
+              name: '<%= forecastData.daily[i].time.format("ddd MMM Do") %>',
+              id: '<%= forecastData.daily[i].time.format("ddd MMM Do") %>',
               data: [
                 <% for (let j=0; j<forecastData.daily[i].hourly.length; j++) {%>  
                   ['<%= forecastData.daily[i].hourly[j].time.format("h A") %>', <%= forecastData.daily[i].hourly[j].precipAccumulation %> ],

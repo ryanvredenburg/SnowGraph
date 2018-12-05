@@ -183,7 +183,7 @@ function getSeasonalData(triplet, elementCd, callback) {
 
 function getGranularData(triplet, elementCd, callback){
    var url = 'https://wcc.sc.egov.usda.gov/awdbWebService/services?WSDL';
-  var endDate = moment().format('YYYY-MM-DD')
+  var endDate = moment().add(1, 'days').format('YYYY-MM-DD')
   var beginDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
   var args = {
         stationTriplets: triplet,
@@ -209,7 +209,7 @@ function getGranularData(triplet, elementCd, callback){
 
 function getStationData(triplet, callback){
    var url = 'https://wcc.sc.egov.usda.gov/awdbWebService/services?WSDL';
-  var endDate = moment().format('YYYY-MM-DD')
+  var endDate = moment().add(1, 'days').format('YYYY-MM-DD')
   var beginDate = moment().subtract(7, 'days').format('YYYY-MM-DD')
   var args = {
         stationTriplet: triplet,
